@@ -1,0 +1,104 @@
+﻿@model Spice.Models.ViewModels.SubCategoryAndCategoryViewModel <!-- the model were using -->
+@using Spice.Extensions
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<h2 class="text-info">Create Sub Category</h2>
+<br />
+
+<!-- name="_StatusMessage" is the file we added -->
+<!-- model="Model.StatusMessage" is the property from the model we passed in -->
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<div class="border backgroundWhite row">
+    <div class="col-8 border-right">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <!-- had to convert the CategoryList which is an enum list to a select list item -->
+                    <select id="ddlCategorylist" asp-for="SubCategory.CategoryId" asp-items="Model.CategoryList.ToSelectListItem(Model.SubCategory.CategoryId)" class="form-control"></select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-5">
+                    <input asp-for="SubCategory.Name" class="form-control" />
+                </div>
+                <span asp-validation-for="SubCategory.Name" class="text-danger"></span> <!-- makes sure the subcategory doesnt exist in the category -->
+            </div>
+            <div class="form-group row">
+                <div class="col-5 offset-3">
+                    <partial name="_CreateAndBackToListButton" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-3 offset-1">
+        @if(Model.SubCategoryList.Count() > 0)
+        {
+        <p> Existing Subcategories: </p>
+
+        <div id="SubCategoryList">
+            <ul class="list-group"></ul>
+        </div>
+        }
+    </div>
+
+
+
+</div>
+
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");} <!-- brought this script in from views, shared -->
+
+    <script>
+
+        function updateSubCategoryList() {
+            // ddlCategorylist is the id from the select above so we can grab the value the user selected 
+            var categorySelected = document.getElementById("ddlCategorylist").value;
+
+            $list = $('#SubCategoryList');  // get the div a couple lines up to add our list to
+
+            $.ajax({
+                url: '/Admin/SubCategory/GetSubCategory/' + categorySelected,
+                type: 'GET',
+                dataType: 'text',
+                success: function (data) {  // data is what the get action returns
+                    results = JSON.parse(data); // had to parse it b/c remember we returned it at json
+                    $list.html(''); // make it empty before appending our elements
+                    $list.append(' <ul class="list-group"> ');
+                    for (i in results) {
+                        $list.append('<li class="list-group-item">' + results[i].text + '</li>');
+                    }
+                    $list.append('</ul>');
+                }
+
+            });
+
+        }
+
+        // need to call the function twice (1) when page first renders
+        $(document).ready(function () {
+            updateSubCategoryList();
+        });
+
+        // (2) when select value changes
+        $("#ddlCategorylist").on("change", function () {
+            updateSubCategoryList();
+        });
+
+
+    </script>
+
+
+}

@@ -1,0 +1,35 @@
+﻿@model Category
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml"; <!-- brings in out layout which has our navbar and ect --> 
+}
+
+<br />
+<h2 class="text-info">Create Category</h2>
+<br />
+
+<form method="post" asp-action="Create">
+    <div class="border backgroundWhite">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <div class="col-2">
+                <!-- "Name" will display "Category Name" bc thats what its set to in the model -->
+                <label asp-for="Name" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <!-- the input gets put in the model and fills the name field -->
+                <input asp-for="Name" class="form-control" />   <!-- Name is what gets passed to the create action on the controller -->
+            </div>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group row">
+            <div class="col-5 offset-2">
+                <partial name="_CreateAndBackToListButton" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

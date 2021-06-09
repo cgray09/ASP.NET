@@ -1,0 +1,136 @@
+﻿@model Spice.Models.ViewModels.MenuItemViewModel    <!-- object model we created in the controller -->
+@using Spice.Extensions
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<h2 class="text-info">Create MenuItem</h2>
+<br />
+
+<!-- enctype="multipart/form-data" is needed everytime we upload images in a post -->
+<form method="post" asp-action="Create" enctype="multipart/form-data">
+    <div class="border backgroundWhite">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Name" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="MenuItem.Name" class="form-control" />
+            </div>
+            <span asp-validation-for="MenuItem.Name" class="text-danger"></span>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Description" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                @Html.TextAreaFor(m => m.MenuItem.Description)
+            </div>
+            <span asp-validation-for="MenuItem.Description" class="text-danger"></span>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Price" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="MenuItem.Price" class="form-control" />
+            </div>
+            <span asp-validation-for="MenuItem.Price" class="text-danger"></span>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Image" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input type="file" name="files" multiple class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.CategoryId" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <!-- id="CategoryId" needed to populate subcategory dropdown -->
+                <!-- Model.MenuItem.CategoryId is possible b/c in the MenuItemViewModel that we
+        passed to this file we gave it MenuItem as a property (which of course has
+        the CategoryId and subcategory id) -->
+                <select asp-for="@Model.MenuItem.CategoryId" id="CategoryId" asp-items="Model.Category.ToSelectListItem(Model.MenuItem.CategoryId)" class="form-control"></select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.SubCategoryId" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <!-- asp-items is empty dropdown so we can populate dynamically w/ javascript -->
+                <select asp-for="@Model.MenuItem.SubCategoryId" name="SubCategoryId" id="SubCategoryId" asp-items="@(new SelectList(string.Empty,"Id","Name"))" class="form-control"></select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItem.Spicyness" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <!-- select dropdown since spicyness is an enum in our model -->
+                <!-- we dont needed to create an extension to convert the enum in asp-items. I guess its 
+                    already built in w/ html -->
+                <select asp-for="MenuItem.Spicyness" asp-items="Html.GetEnumSelectList<MenuItem.ESpicy>()" class="form-control"></select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-5 offset-2">
+                <partial name="_CreateAndBackToListButton" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- our rich textbox script -->
+@section Scripts{
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: "lists",
+            menubar: 'file edit format'
+        });
+    </script>
+
+    <!-- script to change our subcategories dynamically based on the selected category-->
+    <script type="text/javascript">
+        // execute everytime document changes
+        $(document).ready(function () {
+            getSubCategory();
+            $('#CategoryId').change(function () {   // so everytime the dropdown category changes
+                getSubCategory();
+            });
+        });
+
+
+        function getSubCategory() {
+            // this url doesnt add up bc there is no path that matches it in this project
+            var url = '@Url.Content("~/")' + "Admin/SubCategory/GetSubCategory";  // from SubCategoryController
+            var ddlsoruce = '#CategoryId';
+            // getJSON since we'll be getting back JSON and id b/c GetSubCategory function requires it as argument
+            
+            // what is "data" and where is it even coming from
+            $.getJSON(url, { id: $(ddlsoruce).val() }, function (data) {
+                var items = '';
+                $('#SubCategoryId').empty();    // empty the dropdown before we fill it
+                $.each(data, function (i, subcategory) {
+                    items += "<option value='" + subcategory.value + "'>" + subcategory.text + "</option>";
+                });
+
+                $('#SubCategoryId').html(items);
+            })
+        }
+    </script>
+
+
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

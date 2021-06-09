@@ -1,0 +1,100 @@
+﻿@model Spice.Models.ViewModels.IndexViewModel
+
+<br />
+
+@if (Model.Coupon.ToList().Count > 0)
+{
+<div class="border">
+    <!-- data-interval is the time it takes for coupons to change -->
+    <div class="carousel" data-ride="carousel" data-interval="2500">
+        @for (int i = 0; i < Model.Coupon.Count(); i++)
+            {
+                if (i == 0)
+                {
+
+
+        <div class="carousel-item active">
+            @{
+                 <!-- have to convert since the image in the db is in the form of a byte array -->
+                            var base64 = Convert.ToBase64String(Model.Coupon.ToList()[i].Picture);
+                            var imgsrc = string.Format("data:image/jpg;base64,{0}", base64);
+            }
+
+            <img src="@imgsrc" height="50px" class="d-block w-100" />
+        </div>
+                }
+                else
+                {
+        <div class="carousel-item">
+            @{
+                            var base64 = Convert.ToBase64String(Model.Coupon.ToList()[i].Picture);
+                            var imgsrc = string.Format("data:image/jpg;base64,{0}", base64);
+            }
+
+            <img src="@imgsrc" height="50px" class="d-block w-100" />
+        </div>
+                }
+            }
+    </div>
+</div>
+
+}
+
+<br /><br />
+
+      <div class="backgroundWhite container">
+         
+          <ul id="menu-filters" class="menu-filter-list list-inline text-center">
+              <li class="active btn btn-secondary ml-1 mr-1" data-filter=".menu-restaurant">Show All</li>
+
+              <!-- displays the category names as buttons to select -->
+              @foreach (var item in Model.Category)
+              {
+                  <li class="ml-1 mr-1" data-filter=".@item.Name.Replace(" ",string.Empty)">@item.Name</li>
+              }
+          </ul>
+
+          <!-- displays the menu items - either all or when a category is selected -->
+          @foreach(var category in Model.Category)
+          {
+              <div class="row" id="menu-wrapper">
+                  <partial name="_ThumbnailAreaPartial" model="@Model.MenuItem.Where(u=>u.Category.Name.Equals(category.Name))" />
+              </div>
+          }
+      </div>
+
+
+@section Scripts{ 
+      <script src="https://code.jquery.com/jquery-3.3.1.js"
+              integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+              crossorigin="anonymous"></script>
+
+<script>
+
+    var posts = $('.post'); // this is the div we will toggle in _ThumbnailAreaPartial
+
+    (function ($) {
+        // this is the ul and li from a couple lines up
+        $("#menu-filters li").click(function () {   // everytime the li in the ul is clicked run function
+            $("#menu-filters li").removeClass('active btn btn-secondary');  // removes "show all" as active since it is by default
+            $(this).addClass('active btn btn-secondary');   // this is whatever user selected
+
+            var selectedFilter = $(this).data("filter"); // this gives us what user selected from data-filter in li
+                                                         // (the category button the user selected)
+            
+            // so it removes the class to display all items then adds the category of the
+            // items we want to display as a class in the div in _ThumbnailAreaPartial
+            // when just a category is set as a class just those items show
+            $(".menu-restaurant").fadeOut();
+
+            setTimeout(function () {
+                $(selectedFilter).slideDown();
+            }, 300);
+        });
+
+
+
+    })(jQuery);
+ 
+</script>
+    }

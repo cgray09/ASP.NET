@@ -49,9 +49,18 @@
                             came with the rich textbox -->
                         <p>@Html.Raw(item.Description)</p>
                     </div>
-                    <div class="col-md-3 col-sm-12 offset-md-9 text-center">
-                        <a asp-action="Details" class="btn btn-success form-control" asp-route-id="@item.Id">Details</a>
-                    </div>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <div class="col-md-3 col-sm-12 offset-md-9 text-center">
+                            <a asp-action="Details" class="btn btn-success form-control" asp-route-id="@item.Id">Details</a>
+                        </div>
+                    }
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <div class="col-md-3 col-sm-12 offset-md-9 text-center">
+                            <a class="btn btn-success form-control" asp-area="Identity" asp-page="/Account/Login">Details</a>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

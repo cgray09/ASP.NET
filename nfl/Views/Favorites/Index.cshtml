@@ -1,0 +1,37 @@
+﻿@model TeamListViewModel
+
+@{ 
+  ViewData["Title"] = "Favorites";
+}
+
+<div class="text-center" style="margin-bottom: 30px;">
+  <h2>My Favorites</h2>
+  <form asp-controller="Favorites" asp-action="Delete" method="post">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary" asp-route-activeConf="@Model.ActiveConf" asp-route-activeDiv="@Model.ActiveDiv">Back to Home Page</a>
+
+    <button type="submit" class="btn btn-primary">Clear Favorites</button>
+  </form>
+</div>
+
+<div class="row" style="margin-bottom: 200px;">
+  <div class="col-8 offset-2">
+    <ul class="list-group">
+      @foreach(Team team in Model.Teams)
+      {
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-sm-4">
+              <img src="~/images/@team.LogoImage" alt="@team.Name" />
+            </div>
+            <div class="col-sm-4">
+              @team.Name
+            </div>
+            <div class="col-sm-4">
+              @team.Conference.Name | @team.Division.Name
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+</div>

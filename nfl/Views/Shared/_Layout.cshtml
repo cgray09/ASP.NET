@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - NFL</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="container">
+        <header class="text-center text-white">
+            <h1 class="bg-primary mt-3 p-3">NFL Teams</h1>
+            @if (TempData["message"] != null)
+            {
+                <h4 class="bg-success p-2">@TempData["message"]</h4>
+            }
+
+            @if (!ViewContext.View.Path.Contains("Favorites"))
+            {
+                var session = new NFLSession(Context.Session);
+                <h5 class="bg-info p-2">
+                    <a asp-controller="Favorites" asp-action="Index" class="text-white">My Favorite Teams</a>
+                    <span class="badge badge-light">@(session.GetMyTeamCount())</span>
+                </h5>
+            }
+        </header>
+        <main>
+            @RenderBody()
+        </main>
+    </div>
+    <footer class="border-top footer text-muted" style="height: 150px; line-height: 20px;">
+        <div style="display: flex; flex-direction: column; text-align: center; justify-content: center; margin-top: 30px;">
+            <div>Website Maker: Christian V. Grayson</div>
+            <div>Terms of Service</div>
+            <div>Privacy</div>
+        </div>
+    </footer>
+</body>
+</html>

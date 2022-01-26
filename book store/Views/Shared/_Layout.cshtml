@@ -1,0 +1,111 @@
+﻿@{ 
+  // get cart from session
+  var cart = new PavolsBookStore.Models.DomainModels.Cart(Context);
+
+  // use current controller or area to determine if tab is active
+  var current = ViewContext.RouteData.Values["area"]?.ToString() ??
+    ViewContext.RouteData.Values["controller"]?.ToString();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - Book Store</title>
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet"
+        href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        crossorigin="anonymous">
+  <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item @PavolsBookStore.Models.ViewModels.Nav.Active("Home", current)">
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                        <span class="fas fa-home"></span>&nbsp;Home
+                    </a>
+                </li>
+                <li class="nav-item @PavolsBookStore.Models.ViewModels.Nav.Active("Book", current)">
+                    <a class="nav-link" asp-area="" asp-controller="Book" asp-action="List">
+                        <span class="fas fa-book-open"></span>&nbsp;Books
+                    </a>
+                </li>
+                <li class="nav-item @PavolsBookStore.Models.ViewModels.Nav.Active("Author", current)">
+                    <a class="nav-link" asp-area="" asp-controller="Author" asp-action="List">
+                        <span class="fas fa-feather-alt"></span>&nbsp;Authors
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item @PavolsBookStore.Models.ViewModels.Nav.Active("Cart", current)">
+                    <a class="nav-link" asp-area="" asp-controller="Cart" asp-action="Index">
+                        <span class="fas fa-shopping-cart"></span>&nbsp;Cart
+                        <span class="badge badge-light">@cart.Count</span>
+                    </a>
+                </li>
+
+                @using Microsoft.AspNetCore.Identity
+                @inject SignInManager<PavolsBookStore.Models.DomainModels.User> signInManager
+                @if (signInManager.IsSignedIn(User))
+                {
+                    // signed-in user - Log Out button and username
+                    <li class="nav-item">
+                        <form method="post" asp-controller="Account" asp-action="LogOut" asp-area="">
+                            <input type="submit" value="Log Out" class="btn btn-outline-light" />
+                            <span class="text-light">@User.Identity.Name</span>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+                    // anonymous user - Register link and Log In button
+                    <li class="nav-item @PavolsBookStore.Models.ViewModels.Nav.Active("Register",action)">
+                        <a asp-controller="Account" asp-action="Register" asp-area="" class="nav-link">
+                            <span class="fas fa-edit"></span>&nbsp;Register
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="Account" asp-action="Login" asp-area="" class="btn btn-outline-light">Log In</a>
+                    </li>
+                }
+
+                <li class="nav-item @PavolsBookStore.Models.ViewModels.Nav.Active("Admin", current)">
+                    <a class="nav-link" asp-area="Admin" asp-controller="Book" asp-action="Index">
+                        <span class="fas fa-cog"></span>&nbsp;Admin
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+  <div class="container">
+    
+
+    <main>
+      @if (TempData.Keys.Contains("message"))
+      {
+        <h4 class="bg-info text-center text-white p-2">@TempData["message"]</h4>
+      }
+      @RenderBody()
+    </main>
+  </div>
+  <footer class="border-top footer" style="height: 150px; line-height: 20px; background-color: #343a40; color: rgba(255,255,255,.5);">
+      <div style="display: flex; flex-direction: column; text-align: center; justify-content: center; margin-top: 30px;">
+          <div>Website Maker: Christian V. Grayson</div>
+          <div>Terms of Service</div>
+          <div>Privacy</div>
+      </div>
+  </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

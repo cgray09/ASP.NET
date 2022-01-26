@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro">
+    <link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet" />
+    <script src="~/lib/jquery/jquery.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.js"></script>
+    <link href="~/content/site.css" rel="stylesheet" />
+    <title>@ViewData["Title"] - Candy Shop</title>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        @await Component.InvokeAsync("CategoryMenu")
+                        <li><a asp-controller="Contact" asp-action="Index">Contact</a></li>
+                        @await Component.InvokeAsync("ShoppingCartSummary")
+                        <partial name="_LoginPartial" />
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="row">
+            <div class="col-md-3">
+                <p class="lead">
+                    <img class="img-responsive" src="~/Images/candyshoplogo.png" />
+                </p>
+            </div>
+            <div class="col-md-9">
+                @RenderBody()
+            </div>
+        </div>
+        @RenderSection("Scripts", required: false)
+    </div>
+    <footer class="border-top footer" style="height: 150px; line-height: 20px; background: #a593c2; color: white; margin-bottom: -30px;">
+        <div style="display: flex; flex-direction: column; text-align: center; justify-content: center;">
+            <div style="margin-top: 30px;">Website Maker: Christian V. Grayson</div>
+            <div>Terms of Service</div>
+            <div>Privacy</div>
+        </div>
+    </footer>
+</body>
+</html>
